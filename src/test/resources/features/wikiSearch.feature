@@ -9,7 +9,7 @@ Feature: Wikipedia search functionality
     And User clicks wiki search button
     Then User sees "Elon Musk" is in the wiki title
 
-  @wip
+
   Scenario: Wikipedia Search Functionality Header Verification
     Given User is on Wikipedia home page
     When  User types "Steve Jobs" in the wiki search box
