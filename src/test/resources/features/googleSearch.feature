@@ -13,8 +13,8 @@ Feature: Google search functionality
     When User searches for apple
     Then User should see apple in the title
 
-
+@google
   Scenario: User search title verification
     Given User is on Google home page
-    When User searches for "mango fruit"
-    Then User should see "mango fruit" in the title
+    When User searches for "wooden spoon"
+    Then User should see "wooden spoon" in the title
