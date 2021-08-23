@@ -17,13 +17,16 @@ public class Driver {
     WQe make it static, cuz we want it to run b4 everything else, also we will use it in a static method
 
      */
-    private static WebDriver driver;
+    private static ThreadLocal<WebDriver> driverPool= new ThreadLocal<>();
 
     /*
     creating re-usable utility method that will return same driver instance everytime we call it
      */
     public static WebDriver getDriver() {
-        if (driver == null) {
+        if (driverPool.get() == null) {
+            synchronized (Driver.class){
+
+
                /*
                we read our browser type from conf.propertied file using
                .getProperty method we creating in ConfigurationReader class.
@@ -38,22 +41,23 @@ public class Driver {
             switch (browserType) {
                 case "chrome":
                     WebDriverManager.chromedriver().setup();
-                    driver = new ChromeDriver();
-                    driver.manage().window().maximize();
-                    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+                    driverPool.set(new ChromeDriver());
+                    driverPool.get().manage().window().maximize();
+                    driverPool.get().manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
                     break;
                 case "firefox":
                     WebDriverManager.firefoxdriver().setup();
-                    driver = new FirefoxDriver();
-                    driver.manage().window().maximize();
-                    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+                    driverPool.set(new FirefoxDriver());
+                    driverPool.get().manage().window().maximize();
+                    driverPool.get().manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
                     break;
+            }
             }
         }
         /*
         same driver instance will be returned every time we c all Driver.gerDriver(); method
          */
-        return driver;
+        return driverPool.get();
 
     }
 
@@ -63,9 +67,9 @@ public class Driver {
     Either null or not null must exist.
      */
     public static void closeDriver(){
-        if(driver != null){
-            driver.quit();
-            driver=null;
+        if(driverPool.get() != null){
+            driverPool.get().quit();
+            driverPool.remove();
 
         }
     }
